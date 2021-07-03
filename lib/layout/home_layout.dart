@@ -1,3 +1,4 @@
+import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:to_do_app/modules/archived_tasks/archivedTasksScreen.dart';
@@ -5,6 +6,7 @@ import 'package:to_do_app/modules/done_tasks/doneTasksScreen.dart';
 import 'package:to_do_app/modules/new%20_tasks/newTasksScreen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:to_do_app/shared/components/components.dart';
+import 'package:to_do_app/shared/components/constants.dart';
 
 // flutter run --no-sound-null-safety
 class homeLayout extends StatefulWidget {
@@ -27,7 +29,6 @@ class _homeLayoutState extends State<homeLayout> {
   var timeController = new TextEditingController();
   var statusController = new TextEditingController();
 
-  late List<Map> tasks;
   @override
   void initState() {
     // TODO: implement initState
@@ -65,10 +66,14 @@ class _homeLayoutState extends State<homeLayout> {
               insertToDB(titleController.text, dateController.text,
                       timeController.text)
                   .then((value) {
-                Navigator.pop(context);
-                onBottomSheetShow = false;
-                setState(() {
-                  fabIcon = Icons.edit;
+                selectFromDB(database!).then((value) {
+                  Navigator.pop(context);
+                  onBottomSheetShow = false;
+                  setState(() {
+                    fabIcon = Icons.edit;
+                    tasks = value;
+                    print(tasks);
+                  });
                 });
               });
             }
@@ -186,7 +191,11 @@ class _homeLayoutState extends State<homeLayout> {
               icon: Icon(Icons.archive_outlined), label: "Archive"),
         ],
       ),
-      body: screens[currentIndex],
+      body: ConditionalBuilder(
+        condition: tasks.length > 0,
+        builder: (context) => screens[currentIndex],
+        fallback: (context) => CircularProgressIndicator(),
+      ),
     );
   }
 
@@ -212,9 +221,12 @@ class _homeLayoutState extends State<homeLayout> {
       });
     }, onOpen: (database) {
       selectFromDB(database).then((value) {
-        tasks = value;
+        setState(() {
+          tasks = value;
+        });
         print(tasks);
-      }).catchError((error) => print("${error.toString()}"));
+      }).catchError(
+          (error) => print("Error getting values: ${error.toString()}"));
     });
   }
 

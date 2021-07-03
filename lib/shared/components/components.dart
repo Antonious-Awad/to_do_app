@@ -21,31 +21,27 @@ Widget defaultButton({
       ),
     );
 
-
-
-
-Widget textField(
-        {required TextEditingController Controller,
-        required TextInputType keyboard,
-        Function? onSubmit,
-        Function? onChange,
-        Function? onTap,
-        required Function(String?) valide,
-        required String label,
-        required IconData preIcon,
-        IconData? sufficon,
-        bool password = false,
-        Function? suffixPressed,
-        bool isClickable = true,
-
-        }) =>
+Widget textField({
+  required TextEditingController Controller,
+  required TextInputType keyboard,
+  Function? onSubmit,
+  Function? onChange,
+  Function? onTap,
+  required Function(String?) valide,
+  required String label,
+  required IconData preIcon,
+  IconData? sufficon,
+  bool password = false,
+  Function? suffixPressed,
+  bool isClickable = true,
+}) =>
     TextFormField(
       enabled: isClickable,
       controller: Controller,
       obscureText: password,
       keyboardType: keyboard,
-      onFieldSubmitted:(value) => onSubmit!(value) ,
-      onChanged:(value)=>onChange!(value) ,
+      onFieldSubmitted: (value) => onSubmit!(value),
+      onChanged: (value) => onChange!(value),
       validator: (value) => valide(value),
       decoration: InputDecoration(
         //hintText: "Enter your email address",
@@ -54,50 +50,59 @@ Widget textField(
         prefixIcon: Icon(
           preIcon,
         ),
-        suffixIcon: sufficon!=null? IconButton(
-          onPressed: ()=> suffixPressed!(),
-          icon: Icon(
-            sufficon,
-          ),
-        ): null,
+        suffixIcon: sufficon != null
+            ? IconButton(
+                onPressed: () => suffixPressed!(),
+                icon: Icon(
+                  sufficon,
+                ),
+              )
+            : null,
       ),
-      onTap: ()=> onTap!(),
+      onTap: () => onTap!(),
     );
 
-
-Widget buildTaskItem()=> Padding(
+Widget buildTaskItem(Map model) => Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
         children: [
           CircleAvatar(
             radius: 40.0,
             child: Text(
-              "2:00 PM",
+              "${model['time']}",
             ),
           ),
-          SizedBox(width: 20.0,),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Flutter learn",
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 20.0,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${model['title']}",
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(height: 8.0,),
-              Text(
-                "Jul 3 , 2021",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+                SizedBox(
+                  height: 8.0,
                 ),
-              ),
-            ],
+                Text(
+                  "${model['date']}",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
-
