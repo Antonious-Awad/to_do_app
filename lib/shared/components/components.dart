@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_app/shared/cubit/cubit_cubit.dart';
 
 Widget defaultButton({
   double? width = double.infinity,
@@ -62,46 +63,90 @@ Widget textField({
       onTap: () => onTap!(),
     );
 
-Widget buildTaskItem(Map model) => Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Row(
+Widget buildTaskItem(Map model, BuildContext context) => Dismissible(
+      key: Key(model['id'].toString()),
+      onDismissed: (direction) {
+        AppCubit.get(context).deletefromDB(model['id']);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 40.0,
+              child: Text(
+                "${model['time']}",
+              ),
+            ),
+            SizedBox(
+              width: 20.0,
+            ),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${model['title']}",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    "${model['date']}",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 20.0,
+            ),
+            IconButton(
+                onPressed: () {
+                  AppCubit.get(context).updateDB("done", model['id']);
+                },
+                icon: Icon(
+                  Icons.check_box,
+                  color: Colors.green.shade700,
+                )),
+            SizedBox(
+              width: 10.0,
+            ),
+            IconButton(
+                onPressed: () {
+                  AppCubit.get(context).updateDB("archived", model['id']);
+                },
+                icon: Icon(
+                  Icons.archive,
+                  color: Colors.black45,
+                ))
+          ],
+        ),
+      ),
+    );
+
+Widget buildNoTaskItem() => Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 40.0,
-            child: Text(
-              "${model['time']}",
-            ),
+          Icon(
+            Icons.menu,
+            size: 70,
           ),
-          SizedBox(
-            width: 20.0,
-          ),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${model['title']}",
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(
-                  height: 8.0,
-                ),
-                Text(
-                  "${model['date']}",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            "NO tasks yet",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ],
       ),
